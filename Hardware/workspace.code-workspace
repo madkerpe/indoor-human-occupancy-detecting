@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "VOP_ESP32_Thing"
+		},
+		{
+			"path": "C:\\Users\\marij\\Documents\\PlatformIO\\Projects\\VOP_ESP32_Thing_ESP-IDF",
+			"name": "VOP_ESP32_Thing_ESP-IDF"
+		},
+		{
+			"path": "C:\\Users\\marij\\Desktop\\VOP\\ESP_32_WiFi_Test",
+			"name": "ESP_32_WiFi_Test"
+		}
+	],
+	"settings": {
+		"terminal.integrated.env.windows": {
+			"PATH": "C:\\Users\\marij\\.platformio\\penv\\Scripts;C:\\Users\\marij\\.platformio\\penv;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\ProgramData\\Oracle\\Java\\javapath;C:\\Program Files (x86)\\Razer Chroma SDK\\bin;C:\\Program Files\\Razer Chroma SDK\\bin;C:\\Program Files (x86)\\Intel\\iCLS Client\\;C:\\Program Files\\Intel\\iCLS Client\\;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Program Files (x86)\\Intel\\Intel(R) Management Engine Components\\DAL;C:\\Program Files\\Intel\\Intel(R) Management Engine Components\\DAL;C:\\Program Files (x86)\\Intel\\Intel(R) Management Engine Components\\IPT;C:\\Program Files\\Intel\\Intel(R) Management Engine Components\\IPT;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Program Files\\Git\\cmd;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\Program Files\\dotnet\\;C:\\Users\\marij\\adb-fastboot\\platform-tools;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\MATLAB\\R2018a\\runtime\\win64;C:\\Program Files\\MATLAB\\R2018a\\bin;C:\\Program Files\\Microsoft VS Code\\bin;C:\\Users\\marij\\AppData\\Local\\Programs\\Python\\Python36-32\\Scripts\\;C:\\Users\\marij\\AppData\\Local\\Programs\\Python\\Python36-32\\;C:\\Users\\marij\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Program Files\\Microsoft VS Code\\bin;C:\\Users\\marij\\AppData\\Local\\Microsoft\\WindowsApps;;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\ProgramData\\Oracle\\Java\\javapath;C:\\Program Files (x86)\\Razer Chroma SDK\\bin;C:\\Program Files\\Razer Chroma SDK\\bin;C:\\Program Files (x86)\\Intel\\iCLS Client\\;C:\\Program Files\\Intel\\iCLS Client\\;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Program Files (x86)\\Intel\\Intel(R) Management Engine Components\\DAL;C:\\Program Files\\Intel\\Intel(R) Management Engine Components\\DAL;C:\\Program Files (x86)\\Intel\\Intel(R) Management Engine Components\\IPT;C:\\Program Files\\Intel\\Intel(R) Management Engine Components\\IPT;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Program Files\\Git\\cmd;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\Program Files\\dotnet\\;C:\\Users\\marij\\adb-fastboot\\platform-tools;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\MATLAB\\R2018a\\runtime\\win64;C:\\Program Files\\MATLAB\\R2018a\\bin;C:\\Program Files\\Microsoft VS Code\\bin;C:\\Users\\marij\\AppData\\Local\\Programs\\Python\\Python36-32\\Scripts\\;C:\\Users\\marij\\AppData\\Local\\Programs\\Python\\Python36-32\\;C:\\Users\\marij\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Program Files\\Microsoft VS Code\\bin;C:\\Users\\marij\\AppData\\Local\\Microsoft\\WindowsApps;",
+			"PLATFORMIO_CALLER": "vscode"
+		},
+		"files.associations": {
+			"chrono": "cpp"
+		}
+	}
+}

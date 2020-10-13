@@ -1,0 +1,67 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/debug_tracker.css')}}">
+
+<script>
+    $(document).ready(function(){
+        var current_objects = {};  //dict: <key:(x,y)>
+        var colors={}; //color per object in a dict
+        var socket = io.connect('http://'+ document.domain+':'+location.port);
+        var img = document.getElementById("dot_page");
+        var legend = document.getElementById("id_list");
+
+        var id_to_dot = {};
+
+        socket.on('connect', function(){
+            console.log('Im Connected');
+           });
+
+        socket.on('localiser_update', function(data){
+            console.log(data['co'][0]);
+
+            sensor_id = data['id'];
+
+            if(sensor_id in id_to_dot){
+                for(i = 0; i < id_to_dot[sensor_id].length; i++){
+                    img.removeChild(id_to_dot[sensor_id][i]);
+                }
+            }
+            id_to_dot[sensor_id] = [];
+
+
+            legend.innerHTML = '';
+
+
+
+            for(i = 0; i < data['co'].length; i++){
+                person_loc = data['co'][i];
+                var dot = document.createElement("div");
+                dot.className = "dot";
+                dot.style.top = String(parseInt(person_loc[0])-10) + "px";
+                dot.style.left = String(parseInt(person_loc[1])-10) + "px";
+                dot.style.backgroundColor = "#000000";
+                img.appendChild(dot);
+                id_to_dot[sensor_id].push(dot)
+            }
+        });
+
+    });
+</script>
+<h1>Localisation output</h1>
+<div class="main_wrapper">
+    <div class="debug_img" id="img">
+        <img src="../static/Img/layout.png" alt="" >
+        <div id="dot_page" style="height: 100%; width: 100%; left: 0;top: 0; position: absolute;">
+
+        </div>
+    </div>
+    <div class="legend" id="legend">
+        <h3>Objects</h3>
+        <div id="id_list" style="display: grid;">
+
+        </div>
+    </div>
+</div>
+{% endblock %}

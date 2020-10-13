@@ -1,0 +1,11 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="content">
+
+    <video  controls autoplay loop id="vid">
+        <source src={{ url_for(
+        'static', filename=video_path) }} type="video/mp4">
+    </video>
+</div>
+{% endblock %}

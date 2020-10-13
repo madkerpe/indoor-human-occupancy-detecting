@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VOP</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css')}}" >
+
+    <script src="{{ url_for('static', filename='scripts/jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/socketio.js') }}"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+</head>
+<body>
+<div class="main_grid">
+    <div class="header_wrapper">
+        <div class="side_header">
+            <div>Views</div>
+            <a href="">Pattern</a>
+            <a href="/view/thermal_data">Thermal data</a>
+            <a href="/view/localiser">Localiser</a>
+            <a href="/view/tracker">Tracker</a>
+            <a href="/view/heatmap">Heatmap</a>
+            <a href="/view/tracing">Tracing</a>
+            <div>Config</div>
+            <a href="/config/webcams">Webcams</a>
+            <a href="/config/calibrate">Calibrate</a>
+            <a href="/config/tracker">Tracker</a>
+        </div>
+    </div>
+
+    <div class="content_wrapper">
+        {% block content %}{% endblock%}
+    </div>
+</div>
+</body>
+</html>

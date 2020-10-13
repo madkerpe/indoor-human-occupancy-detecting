@@ -1,0 +1,75 @@
+{% extends "main.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/debug.css') }}" >
+<meta charset="UTF-8">
+<script>
+    $(document).ready(function(){
+
+        var sensor_total = [1,2,4,6,9];
+        var template_stuff = [[1,1],[2,1],[2,2],[3,2]];
+        var cur_sensors = [];
+        var img_handles = {};
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // $.get(
+        //     "thermal_sensor/ids",
+        //     function(data) {
+        //         id_list = data["id_list"];
+        //         console.log("Amount of sensors found: " + id_list.length);
+        //         for(i = 0; i< id_list.length; i++){
+        //             let img_url = `/thermal_sensor/${id_list[i]}/last_image?scale_up=20&interpolate=0`;
+        //             html_temp = `<li class="debug_img_item">
+        //                      <div class="debug_img_wrapper">
+        //                      <p>This is sensor ${i}:</p>
+        //                      <img src="${img_url}" id="thermal_image_${id_list[i]}">
+        //                     </div>
+        //                     </li>`;
+        //             $("#debug_imgs_list").append(html_temp)
+        //         }
+        //     }
+        // );
+
+        socket.on('connect', function() {
+            socket.emit('my event', {data: 'I\'m connected!'});
+        });
+
+        socket.on('new_image', function (data) {
+            console.log("new image");
+            dev_id = data["id"];
+            img_el = null;
+
+            if(!(dev_id in img_handles)){
+                console.log('Div not found');
+                new_el = $('<div class="debug_img" style="height: 90%;"><div>Sensor: ' + dev_id + '</div><img src=""></div>');
+                $('#debug_imgs').append(new_el);
+                img_el = $('#debug_imgs').children('div').last().children('img').eq(0);
+                img_handles[dev_id] = img_el;
+                img_el.css({'max-width': '100%', 'max-height': '100%'});
+
+                amount_keys = Object.keys(img_handles).length;
+
+                for(let i = 0; i < template_stuff.length; i++){
+                    console.log(i);
+                    if(sensor_total[i] <= amount_keys && amount_keys < sensor_total[i + 1]){
+                        console.log("Found des amount sensor index: " + i);
+                        column_string = "repeat(" + amount_keys + ", 1fr)";
+
+                        $('#debug_imgs').css({'grid-template-columns': column_string});
+    //                     max-width:100%;
+    // max-height:100%;
+                    }
+                }
+            }
+            img_handles[dev_id].attr('src', 'data:image/jpeg;base64,' + data['img'])
+        });
+
+
+    });
+
+</script>
+
+
+    <div id="debug_imgs">
+    </div>
+
+{% endblock %}

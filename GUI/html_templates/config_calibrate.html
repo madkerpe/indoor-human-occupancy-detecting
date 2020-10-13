@@ -1,0 +1,83 @@
+{% extends "main.html" %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/config_calibrate.css') }}" >
+
+<script>
+    $(document).ready(function(){
+        var socket = io.connect('http://'+ document.domain+':'+location.port);
+        checkboxes = document.getElementsByClassName("sensor_id_checkbox");
+
+        socket.on('connect', function(){
+            console.log('Im Connected');
+           });
+
+        socket.on('localiser_update', function(data){
+
+        });
+        $('.play_point').click(function () {
+            console.log("clicked to calibrate");
+            point = $(this).attr('title');
+            ids = get_selected_ids();
+            calib_data = {'point': point, 'ids': ids};
+            socket.emit('calibrate_point', calib_data);
+        });
+
+        function get_selected_ids() {
+            ids = [];
+            for(i = 0; i < checkboxes.length; i++){
+                if(checkboxes[i].checked){
+                    ids.push(parseInt(checkboxes[i].value));
+                }
+
+            }
+            return ids;
+        }
+
+    });
+</script>
+
+<div class="content">
+    <div class="content_item">
+        <h2>Sensor id's</h2>
+        <ul>
+        {% for sensor_id in sensor_ids %}
+
+            <li>{{sensor_id}} <input type="checkbox" name="vehicle1" value="{{sensor_id}}" class="sensor_id_checkbox"></li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="content_item">
+        <h2>Current Points</h2>
+        <div class="point_wrapper link_grid">
+            <div><u>Name</u></div>
+            <div><u>Coordinate</u></div>
+            <div></div>
+            {% for name, co in current_points.items() %}
+
+                <div><a title="{{name}}" class="play_point">&#9654;</a>  {{name}}</div>
+                <div>{{co}}</div>
+
+                <div><a href="/config/calibrate/{{name}}/delete" title="remove point">x</a></div>
+            {% endfor %}
+
+        </div>
+        <a href="/config/calibrate/save" class="recording_links">Save calibration data</a>
+
+    </div>
+
+    <div class="content_item">
+        <h2>Add Point</h2>
+        <form action="/config/calibrate/addpoint" method="post">
+            <div>Name</div>
+            <input type="text" name="name">
+            <div>X Coordinate</div>
+            <input type="text" name="xco">
+            <div>Y Coordinate</div>
+            <input type="text" name="yco">
+            <input type="submit">
+        </form>
+
+    </div>
+</div>
+{% endblock %}

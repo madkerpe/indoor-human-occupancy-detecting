@@ -1,0 +1,37 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="content">
+    <div class="content_item" id="first_content_item">
+        <h2>Control</h2>
+        <a href="/webcam/start" class="recording_links">Start recording</a>
+        <a href="/webcam/stop" class="recording_links">Stop recording</a>
+    </div>
+
+    <div class="content_item">
+        <h2>Current webcams</h2>
+        <div class="webcam_wrapper link_grid">
+            <div><u>Sensor ID</u></div>
+            <div><u>URL</u></div>
+            <div></div>
+            {% for sensor_id, url in current_webcams.items() %}
+
+                <div>{{sensor_id}}</div>
+                <div>{{url}}</div>
+                <div><a href="/webcam/{{sensor_id}}/delete" title="remove link">x</a></div>
+            {% endfor %}
+
+        </div>
+    </div>
+    <div class="content_item">
+        <h2>Add webcam</h2>
+        <form action="/webcam/setip" method="post">
+            <div>Sensor id:</div>
+            <input type="text" name="sensor_id">
+            <div>Video url</div>
+            <input type="text" name="ip">
+            <input type="submit">
+        </form>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% block content %}
+<script>
+    $(document).ready(function(){
+        var socket = io.connect('http://'+ document.domain+':'+location.port);
+
+        socket.on('connect', function(){
+            console.log('Im Connected');
+           });
+
+        document.getElementById("resetTrackerButton").onclick = resetTracker;
+        function resetTracker() {
+            socket.emit('reset_trackers');
+        }
+
+    });
+
+</script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/config_calibrate.css') }}" >
+
+<div class="content">
+    <div class="content_item">
+        <h2>Reset tracker</h2>
+
+        <input id="resetTrackerButton" type="button" value="Reset trackers"/>
+    </div>
+
+</div>
+{% endblock %}

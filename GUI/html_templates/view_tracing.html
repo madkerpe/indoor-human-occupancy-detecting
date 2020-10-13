@@ -1,0 +1,177 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/debug_tracker.css')}}">
+
+<script>
+    $(document).ready(function(){
+        var img = document.getElementById("dot_page");
+        var socket = io.connect('http://'+ document.domain+':'+location.port);
+
+        // number of squares to cover the whole image with squares of 10px by 10px
+        var squares_height = 96;
+        var squares_width = 150;
+
+        var prev_locs = {};
+
+        socket.on('connect', function(){
+            console.log('Im Connected');
+           });
+
+        // making matrix to store all the divs that make up the squares
+        var div_matrix = [];
+        for (i=0; i<squares_height;i++){
+            div_matrix[i] = [];
+            for (j=0;j<squares_width;j++){
+                div_matrix[i][j] = undefined;
+            }
+        }
+
+        //drawing initial heatmap, everything is white
+        for (i=0; i<squares_height;i++) {
+            for (j = 0; j < squares_width; j++) {
+                var grid_el = document.createElement('div');
+                grid_el.className = "grid_element";
+                grid_el.style.top = String(5 * i) + "px";
+                grid_el.style.left = String(5 * j) + "px";
+                grid_el.style.backgroundColor = "#ffffff";
+                document.getElementById("grid").appendChild(grid_el);
+                div_matrix[i][j] = grid_el;
+            }
+        }
+
+        function intToRGB(i) {
+            var hex = (((i * 30) << 2) & 0xFF).toString(16) +
+                (((i * 15417)) & 0xFF).toString(16) +
+                (((i * 127) >> 8) & 0xFF).toString(16) +
+                ((i * 19) & 0xFF).toString(16);
+            // Sometimes the string returned will be too short so we
+            // add zeros to pad it out, which later get removed if
+            // the length is greater than six.
+            hex += '000000';
+            return hex.substring(0, 6);
+        }
+
+        //function used to convert to "square-coords"
+        function scale_coords(coords){
+            new_x = Math.round(squares_height*coords[0]/477);
+            new_y = Math.round(squares_width*coords[1]/750);
+            return [new_x, new_y];
+        }
+
+        function updateSurroundingSquares(sq_x, sq_y, color) {
+            for (i = -1; i < 2; i++) {
+                for (j = -1; j < 2; j++) {
+                    if (sq_x + i > 0 && sq_y + j > 0 && sq_x + i < div_matrix[0].length && sq_y + j < div_matrix.length && !(i == 0 && j == 0)) {
+                        div_matrix[sq_x + i][sq_y + j].style.backgroundColor = color;
+                    }
+                }
+            }
+        }
+
+        function updateConnectingSquares(curr_loc, prev_loc, color){
+            cx = curr_loc[0];
+            cy = curr_loc[1];
+            px = prev_loc[0];
+            py = prev_loc[1];
+            if(cx>px) {
+                for (i = px + 1; i < cx; i++) {
+                    new_y = Math.round(((cy - py) / (cx - px)) * (i - px) + py);
+                    div_matrix[i][new_y].style.backgroundColor = color;
+                    div_matrix[i+1][new_y].style.backgroundColor = color;
+                    div_matrix[i-1][new_y].style.backgroundColor = color;
+                    div_matrix[i][new_y+1].style.backgroundColor = color;
+                    div_matrix[i][new_y-1].style.backgroundColor = color;
+                }
+            } else if (cx<px){
+                for (i = cx+1; i<px;i++) {
+                    new_y = Math.round(((py - cy) / (px - cx)) * (i - cx) + cy);
+                    div_matrix[i][new_y].style.backgroundColor = color;
+                    div_matrix[i+1][new_y].style.backgroundColor = color;
+                    div_matrix[i-1][new_y].style.backgroundColor = color;
+                    div_matrix[i][new_y+1].style.backgroundColor = color;
+                    div_matrix[i][new_y-1].style.backgroundColor = color;
+                }
+            } else{
+                if (py<cy){
+                    for (i=py+1;i<cy;i++){
+                        div_matrix[cx][i].style.backgroundColor = color;
+                        div_matrix[cx+1][i].style.backgroundColor = color;
+                        div_matrix[cx-1][i].style.backgroundColor = color;
+                        div_matrix[cx][i+1].style.backgroundColor = color;
+                        div_matrix[cx][i-1].style.backgroundColor = color;
+                    }
+                } else {
+                    for (i = cy + 1; i < py; i++) {
+                        div_matrix[cx][i].style.backgroundColor = color;
+                        div_matrix[cx+1][i].style.backgroundColor = color;
+                        div_matrix[cx-1][i].style.backgroundColor = color;
+                        div_matrix[cx][i+1].style.backgroundColor = color;
+                        div_matrix[cx][i-1].style.backgroundColor = color;
+                    }
+                }
+            }
+        }
+
+        socket.on('tracker_update', function(data){
+            console.log("update received");
+            console.log(data);
+
+            img.innerHTML = '';
+            curr_locs = {};
+
+            // for every person detected, the trace is continued
+            for(person_id in data){
+                person_loc = data[person_id]["position"];
+                color_hex = "#" + intToRGB(person_id);
+                square_loc = scale_coords(person_loc);
+                curr_locs[person_id] = square_loc;
+
+                div_matrix[square_loc[0]][square_loc[1]].style.backgroundColor = color_hex;
+                updateSurroundingSquares(square_loc[0], square_loc[1], color_hex);
+                if (person_id in prev_locs) {
+                    updateConnectingSquares(square_loc, prev_locs[person_id], color_hex);
+                }
+            }
+            prev_locs = curr_locs;
+        });
+
+
+    });
+</script>
+
+<html>
+<head>
+    <title>CSS Grids</title>
+    <style>
+        .grid_container{
+            left: 0;
+            top: 0;
+            position: absolute;
+        }
+        .grid_element{
+            height: 5px;
+            width: 5px;
+            position: absolute;
+            opacity: 0.5;
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Tracing</h1>
+    <div class="main_wrapper">
+        <div class="debug_img" id="img">
+            <img src="../static/Img/layout.png" alt="" >
+            <div id="dot_page" style="height: 100%; width: 100%; left: 0;top: 0; position: absolute;"></div>
+            <div class="grid_container" id="grid">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<div class="main_wrapper">
+
+</div>
+{% endblock %}

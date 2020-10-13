@@ -1,0 +1,100 @@
+body{
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    background-color: transparent;
+}
+.main_grid{
+    display: grid;
+    grid-template-columns: 1fr 8fr;
+    height: 100%;
+}
+.header_wrapper{
+    background-color: #f1f1f1;
+    height: 100vh;
+    border-right: #555 1px;
+}
+.side_header{
+    display: grid;
+    width: 100%;
+    border-right: black 1px;
+    align-content: center;
+
+}
+.side_header > a{
+    display: block;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    padding-left: 4vh;
+    text-decoration: none;
+    color: black;
+}
+#first_content_item{
+    padding-bottom: 2vh;
+}
+.side_header > div{
+    display: block;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    padding-left: 1vh;
+    text-decoration: none;
+    color: black;
+}
+.recording_links{
+    padding: 7px;
+    text-decoration: none;
+    color: white;
+    background-color: #555;
+}
+.side_header > a:hover{
+    background-color: #555;
+    color: white;
+    display: block;
+}
+.content_wrapper{
+    margin: 2vh;
+    display: grid;
+
+}
+.content{
+    display: grid;
+    justify-items: center;
+
+}
+
+video, img {
+
+    min-width: 50%;
+    min-height: 80%;
+
+    max-width: 100%;
+    max-height:95vh;
+
+  /* Setting width & height to auto prevents the browser from stretching or squishing the video */
+    width: auto;
+    height: auto;
+
+}
+/* adjustment for full screen
+ */
+
+/*
+img {
+    max-height: 90Vh;
+}
+
+*/
+
+.link_grid > div{
+    margin-bottom: 1vh;
+}
+.link_grid  a{
+    color: black;
+    text-decoration: none;
+}
+.content_item{
+    border-bottom: lightgrey 1px solid;
+    margin-bottom: 1vh;
+    padding-bottom: 1vh;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href={{ url_for('static', filename= "css/main.css" )}}>
+
+
+</head>
+<body>
+<div class="main_grid">
+    <div class="header_wrapper">
+        <div class="side_header">
+            <a href={{ url_for("index") }} > <i style="font-size:40px" class="fa">&#xf015; ></i></a>
+            {% for item in content_list %}
+            {% if item.type == 1%}
+            <a href={{ url_for("content" ,id= content_list.index(item)) }} > <i style="font-size:20px" class="fa">&#xf03d;</i> {{item.name}}</a>
+            {% endif %}
+            {% if item.type == 2%}
+            <a href={{ url_for("content" ,id= content_list.index(item)) }} > <i style="font-size:20px" class="fa">&#xf030;</i> {{item.name}}</a>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="content_wrapper">
+        {% block content %}{% endblock%}
+    </div>
+</div>
+</body>
+</html>

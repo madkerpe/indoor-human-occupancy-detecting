@@ -1,0 +1,243 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/debug_tracker.css')}}">
+
+<script>
+    $(document).ready(function() {
+        var img = document.getElementById("dot_page");
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // WARNING: if pixel size is changed, don't forget to change this in the html part as wel!
+        //      -> .grid_element: height and width
+        var squares_height = 96;
+        var squares_width = 150;
+        var pixel_size = 5;
+
+        // progression in colors: dark blue to dark red, in the same way of a thermal image
+        // ! these are not the colors eventually shown in the image, because of the lower opacity
+        var max_int = 3000;
+
+        socket.on('connect', function () {
+            console.log('Im Connected');
+        });
+
+        // making matrix to store all the divs that make up the squares
+        var div_matrix = [];
+        for (i = 0; i < squares_height; i++) {
+            div_matrix[i] = [];
+            for (j = 0; j < squares_width; j++) {
+                div_matrix[i][j] = undefined;
+            }
+        }
+
+        // making matrix with values indicating the amount of times there was a person in a certain position
+        var val_matrix = [];
+        for (i = 0; i < squares_height; i++) {
+            val_matrix[i] = [];
+            for (j = 0; j < squares_width; j++) {
+                val_matrix[i][j] = 0;
+            }
+        }
+
+        //drawing initial heatmap, everything is white
+        for (i = 0; i < squares_height; i++) {
+            for (j = 0; j < squares_width; j++) {
+                var grid_el = document.createElement('div');
+                grid_el.className = "grid_element";
+                grid_el.style.top = String(pixel_size * i) + "px";
+                grid_el.style.left = String(pixel_size * j) + "px";
+                grid_el.style.backgroundColor = "#ffffff";
+                document.getElementById("grid").appendChild(grid_el);
+                div_matrix[i][j] = grid_el;
+            }
+        }
+
+        // needed functions
+        function getBlueValue(i) {
+            var bhex;
+            if (i >= 0 && i <= 0.125) {
+                if (Math.round((0.5 + 4.167 * i) * 255) <= 255) {
+                    bhex = (Math.round((0.5 + 4.167 * i) * 255)).toString(16);
+                } else {
+                    bhex = "ff";
+                }
+            } else if (i > 0.125 && i <= 0.375) {
+                bhex = "ff";
+            } else if (i > 0.375 && i <= 0.625) {
+                if (Math.round((1 - 4.167 * (i - 0.375)) * 255) >= 0) {
+                    bhex = (Math.round((1 - 4.167 * (i - 0.375)) * 255)).toString(16);
+                } else {
+                    bhex = "00"
+                }
+            } else {
+                bhex = "00";
+            }
+            bhex += "00";
+            return bhex.substring(0, 2);
+        }
+
+        function getGreenValue(i) {
+            var ghex;
+            if (i >= 0.125 && i <= 0.375) {
+                if (Math.round((4.167 * (i - 0.125)) * 255) <= 255) {
+                    ghex = (Math.round((4.167 * (i - 0.125)) * 255)).toString(16);
+                } else {
+                    ghex = "ff";
+                }
+            } else if (i > 0.375 && i <= 0.625) {
+                ghex = "ff";
+            } else if (i > 0.625 && i <= 0.875) {
+                if (Math.round((1 - 4.167 * (i - 0.625)) * 255) >= 0) {
+                    ghex = (Math.round((1 - 4.167 * (i - 0.625)) * 255)).toString(16);
+                } else {
+                    ghex = "00";
+                }
+            } else {
+                ghex = "00";
+            }
+            ghex += "00";
+            return ghex.substring(0, 2);
+        }
+
+        function getRedValue(i) {
+            var rhex;
+            if (i >= 0.375 && i <= 0.625) {
+                if (Math.round((4.167 * (i - 0.375)) * 255) <= 255) {
+                    rhex = (Math.round((4.167 * (i - 0.375)) * 255)).toString(16);
+                } else {
+                    rhex = "ff";
+                }
+            } else if (i > 0.625 && i <= 0.875) {
+                rhex = "ff";
+            } else if (i > 0.875 && i <= 1) {
+                rhex = (Math.round((1 - 4.167 * (i - 0.875)) * 255)).toString(16);
+            } else {
+                rhex = "00"
+            }
+            rhex += "00";
+            return rhex.substring(0, 2);
+        }
+
+        function intToRGBHex(i) {
+            var scaled_int = i / max_int;
+            var blue_val = getBlueValue(scaled_int);
+            var red_val = getRedValue(scaled_int);
+            var green_val = getGreenValue(scaled_int);
+            var hex = "#" + red_val + green_val + blue_val;
+            return hex.substring(0, 7);
+        }
+
+        function updateSurroundingSquares(sq_x, sq_y) {
+            //update distance = 1 and distance = 4
+            for (i = -1; i < 2; i++) {
+                for (j = -1; j < 2; j++) {
+                    if (sq_x + i > 0 && sq_y + j > 0 && sq_x + i < val_matrix[0].length && sq_y + j < val_matrix.length && !(i == 0 && j == 0)) {
+                        val_matrix[sq_x + i][sq_y + j] = val_matrix[sq_x + i][sq_y + j] + 10;
+                        div_matrix[sq_x + i][sq_y + j].style.backgroundColor = intToRGBHex(val_matrix[sq_x + i][sq_y + j]);
+                    }
+                }
+                //distance = 4
+                if (sq_x + i > 0 && sq_y + 4 > 0 && sq_x + i < val_matrix[0].length && sq_y + 4 < val_matrix.length) {
+                    val_matrix[sq_x + i][sq_y + 4] = val_matrix[sq_x + i][sq_y + 4] + 2;
+                    div_matrix[sq_x + i][sq_y + 4].style.backgroundColor = intToRGBHex(val_matrix[sq_x + i][sq_y + 4]);
+                }
+                if (sq_x + i > 0 && sq_y - 4 > 0 && sq_x + i < val_matrix[0].length && sq_y - 4 < val_matrix.length) {
+                    val_matrix[sq_x + i][sq_y - 4] = val_matrix[sq_x + i][sq_y - 4] + 2;
+                    div_matrix[sq_x + i][sq_y - 4].style.backgroundColor = intToRGBHex(val_matrix[sq_x + i][sq_y - 4]);
+                }
+                if (sq_x + 4 > 0 && sq_y + i > 0 && sq_x + 4 < val_matrix[0].length && sq_y + i < val_matrix.length) {
+                    val_matrix[sq_x + 4][sq_y + i] = val_matrix[sq_x + 4][sq_y + i] + 2;
+                    div_matrix[sq_x + 4][sq_y + i].style.backgroundColor = intToRGBHex(val_matrix[sq_x + 4][sq_y + i]);
+                }
+                if (sq_x - 4 > 0 && sq_y + i > 0 && sq_x - 4 < val_matrix[0].length && sq_y + i < val_matrix.length) {
+                    val_matrix[sq_x - 4][sq_y + i] = val_matrix[sq_x - 4][sq_y + i] + 2;
+                    div_matrix[sq_x - 4][sq_y + i].style.backgroundColor = intToRGBHex(val_matrix[sq_x - 4][sq_y + i]);
+                }
+            }
+            //update distance = 2
+            for (i = -2; i < 3; i++) {
+                for (j = -2; j < 3; j++) {
+                    if (sq_x + i > 0 && sq_y + j > 0 && sq_x + i < val_matrix[0].length && sq_y + j < val_matrix.length && !(i == 0 && j == 0)) {
+                        val_matrix[sq_x + i][sq_y + j] = val_matrix[sq_x + i][sq_y + j] + 7;
+                        div_matrix[sq_x + i][sq_y + j].style.backgroundColor = intToRGBHex(val_matrix[sq_x + i][sq_y + j]);
+                    }
+                }
+            }
+            //update distance = 3
+            for (i = -3; i < 4; i++) {
+                for (j = -3; j < 4; j++) {
+                    if (sq_x + i > 0 && sq_y + j > 0 && sq_x + i < val_matrix[0].length && sq_y + j < val_matrix.length && !(i == 0 && j == 0)) {
+                        if (!(i == -3 && j == -3) && !(i == -3 && j == 3) && !(i == 3 && j == 3) && !(i == 3 && j == -3)) {
+                            val_matrix[sq_x + i][sq_y + j] = val_matrix[sq_x + i][sq_y + j] + 4;
+                            div_matrix[sq_x + i][sq_y + j].style.backgroundColor = intToRGBHex(val_matrix[sq_x + i][sq_y + j]);
+                        }
+                    }
+                }
+            }
+        }
+
+        function scale_coords(coords){
+            new_x = Math.round(squares_height*coords[0]/477);
+            new_y = Math.round(squares_width*coords[1]/750);
+            return [new_x, new_y];
+        }
+
+        socket.on('tracker_update', function(data){
+            console.log("update received");
+            console.log(data);
+
+
+            img.innerHTML = '';
+
+            // for every person detected, the values of the exact square and the surrounding squares are increased
+            for(person_id in data) {
+                person_loc = data[person_id]["position"];
+                square_loc = scale_coords(person_loc);
+                if (val_matrix[square_loc[0]][square_loc[1]] + 15 < max_int) {
+                    val_matrix[square_loc[0]][square_loc[1]] = val_matrix[square_loc[0]][square_loc[1]] + 10;
+                    div_matrix[square_loc[0]][square_loc[1]].style.backgroundColor = intToRGBHex(val_matrix[square_loc[0]][square_loc[1]]);
+                    updateSurroundingSquares(square_loc[0], square_loc[1]);
+                }
+            }
+        });
+
+
+    });
+</script>
+
+<html>
+<head>
+    <title>CSS Grids</title>
+    <style>
+        .grid_container{
+            left: 0;
+            top: 0;
+            position: absolute;
+        }
+        .grid_element{
+            height: 5px;
+            width: 5px;
+            position: absolute;
+            opacity: 0.5;
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Heatmap</h1>
+    <div class="main_wrapper">
+        <div class="debug_img" id="img">
+            <img src="../static/Img/layout.png" alt="" >
+            <div id="dot_page" style="height: 100%; width: 100%; left: 0;top: 0; position: absolute;"></div>
+            <div class="grid_container" id="grid">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<div class="main_wrapper">
+
+</div>
+{% endblock %}
