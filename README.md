@@ -1,6 +1,12 @@
 # Indoor Human Detection & Localisation using Thermal Sensors
 
-Deze Repository bevat alle code voor het Vakoverschrijdend Project in de derde bachelor Ingenieurswetenschappen.
+This repository contains all the code for the "Cross-Course Project" for the bachelor computer science @Ugent.
+
+This was a group project, my main contributions were:
+* Writing the embedded software
+* Designing the PCB for the thermal sensors
+* Programming the kalman filters to track people in the room.
+* Making the poster below
 
 ![](Screenshot_1.png)
 
