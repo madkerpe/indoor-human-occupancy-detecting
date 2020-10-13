@@ -1,6 +1,8 @@
-# VOP: Indoor Human Detection & Localisation using Thermal Sensors
+# Indoor Human Detection & Localisation using Thermal Sensors
 
 Deze Repository bevat alle code voor het Vakoverschrijdend Project in de derde bachelor Ingenieurswetenschappen.
+
+![](Screenshot_1.png)
 
 ### Calibratie
 
